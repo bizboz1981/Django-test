@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: djangotest
+      POSTGRES_USER: bill
+      POSTGRES_PASSWORD: DonkeyKong1901!
+    ports:
+      - "5433:5432"  # Change the host port to 5433 to avoid conflict
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/app
+    working_dir: /usr/src/app/djangotest  # Set the correct working directory
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://bill:DonkeyKong1901!@db:5432/djangotest  # Internal port 5432
+
+volumes:
+  postgres_data:
